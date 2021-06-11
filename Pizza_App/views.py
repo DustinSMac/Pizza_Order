@@ -112,8 +112,7 @@ def account(request):
         return redirect('/')
     user=User.objects.get(id=request.session['userID'])
     context={
-        'previouspizzas': Purchased_Pizza.objects.all(),
-        'pizzas': Purchased_Order.objects.get(id=request.session['orderID']).Pizza.all(),
+        'pizzas': Purchased_Pizza.objects.all(),
         'orders': Purchased_Order.objects.all(),
         'order':Order.objects.get(id=request.session['orderID']),
         'user': user,

@@ -104,14 +104,15 @@
                                 <h4>Most recent purchases:</h4>
                             </div>
                             <ul class="list-group list-group-flush">
+                            {% regroup pizzas by order as pizza_group_by_order %}
                                 {% if orders %}
-                                {% for order in orders reversed %}
+                                {% for order in pizza_group_by_order reversed %}
                                 {% if forloop.counter < 6 %}
                                 <li class="list-group-item">
-                                    <span style="font-weight: bold">Order ID: #{{order.id}} - Qty: {{order.quantity}} -
-                                        $: {{order.orderPrice}} - {{order.updated_at}}</span>
+                                    <span style="font-weight: bold">Order ID: #{{order.grouper.id}} - Qty: {{order.grouper.quantity}} -
+                                        $: {{order.grouper.orderPrice}} - {{order.grouper.updated_at}}</span>
                                     <br>
-                                    {% for pizza in pizzas %}
+                                    {% for pizza in order.list %}
                                         - Size: {{pizza.size}} | Crust: {{pizza.crust}} | Topping:
                                     {{pizza.toppings}}<br>
                                     {%endfor%}
@@ -130,8 +131,8 @@
                                 <h4>Most recent picked combos:</h4>
                             </div>
                             <ul class="list-group list-group-flush">
-                                {% if previouspizzas %}
-                                {% for pizza in previouspizzas reversed %}
+                                {% if pizzas %}
+                                {% for pizza in pizzas reversed %}
                                 {% if forloop.counter < 4 %}
                                 <li class="list-group-item">- Size: {{pizza.size}} <br>- Crust: {{pizza.crust}} <br>-
                                     Topping: {{pizza.toppings}} <br>- Price: ${{pizza.price}}
