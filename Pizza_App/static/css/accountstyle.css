@@ -1,0 +1,21 @@
+body {
+    background-color: grey;
+}
+body{
+    background-image: url('../image/pizza.jpg');
+    background-size: 100%;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+}
+
+.container {
+    background-color: rgba(235, 237, 238, 0.918);
+    position: relative;
+    height: auto;
+    width: 90vw;
+    border-radius: 5px;
+    padding: 1em;
+    margin-top: 4em;
+}
+

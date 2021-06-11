@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    {% comment %} Bootstrap CDN and JS {% endcomment %}
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"
+        integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
+    </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"
+        integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/" crossorigin="anonymous">
+    </script>
+    {% comment %} Boostrap icon CDN {% endcomment %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/accountstyle.css' %}">
+
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-fixed-top bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/order">Mac's Pizza</a>
+            <div class="d-flex btn-group" role="group">
+                <button type="button" class="btn btn-default btn-light" onclick="location.href='/order'"><i
+                        class="bi bi-house-fill"></i>Home</button>
+                <button type="button" class="btn btn-default btn-light" onclick="location.href='/checkout'"><i
+                        class="bi bi-cart"></i>Order ({{order.quantity}})</button>
+                <button type="button" class="btn btn-default btn-primary" onclick="location.href='/account'"><i
+                        class="bi bi-person-circle"></i>Account</button>
+                <button type="button" class="btn btn-default btn-light" onclick="location.href='/logout'"><i
+                        class="bi bi-box-arrow-right"></i>Logout</button>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class='row'>
+            <div class="col-md-4">
+                <h2 style="text-align:center">Update your Account</h2>
+                <form method="post" action="update">
+                    {% csrf_token %}
+                    <div class="card">
+                        <ul class="list-group list-group-flush">
+                            <div class='row'>
+                                <li class="list-group-item col-md-6">
+                                    <label class="form-label">First Name</label>
+                                    <input type="text" class="form-control" name='fname' placeholder="{{user.fname}}">
+                                </li>
+                                <li class="list-group-item col-md-6">
+                                    <label class="form-label">Last Name</label>
+                                    <input type="text" class="form-control" name='lname' placeholder="{{user.lname}}">
+                                </li>
+                                <li class="list-group-item col-md-12">
+                                    <label class="form-label">Email</label>
+                                    <input type="text" class="form-control" name='email' placeholder="{{user.email}}">
+                                </li>
+                                <li class="list-group-item col-md-12">
+                                    <label class="form-label">Address</label>
+                                    <input type="text" class="form-control" name='address'
+                                        placeholder="{{user.address}}">
+                                </li>
+                                <li class="list-group-item col-md-4">
+                                    <label class="form-label">City</label>
+                                    <input type="text" class="form-control" name='city' placeholder="{{user.city}}">
+                                </li>
+                                <li class="list-group-item col-md-4">
+                                    <label class="form-label">State</label>
+                                    <select class="form-control" name="state">
+                                        <option default>Choose...</option>
+                                        {% for state in states %}
+                                        <option value="{{state}}">{{state}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </li>
+                                <li class="list-group-item col-md-4">
+                                    <label class="form-label">Zipcode</label>
+                                    <input type="text" class="form-control" name='zipcode'
+                                        placeholder="{{user.zipcode}}">
+                                </li>
+                                <li class="list-group-item col-md-6">
+                                    <label class="form-label">New password</label>
+                                    <input type="text" class="form-control" name='password'>
+                                </li>
+                                <li class="list-group-item col-md-6">
+                                    <label class="form-label">Confirm password</label>
+                                    <input type="text" class="form-control" name='cfpassword'>
+                                </li>
+                            </div>
+                            <button class="btn btn-primary">Update</button>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-8">
+                <h2 style="text-align:center">Re-order your favorite?</h2>
+                <div style="font-size: 0.75em" class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Most recent purchases:</h4>
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                {% if orders %}
+                                {% for order in orders reversed %}
+                                {% if forloop.counter < 6 %}
+                                <li class="list-group-item">
+                                    <span style="font-weight: bold">Order ID: #{{order.id}} - Qty: {{order.quantity}} -
+                                        $: {{order.orderPrice}} - {{order.updated_at}}</span>
+                                    <br>
+                                    {% for pizza in pizzas %}
+                                        - Size: {{pizza.size}} | Crust: {{pizza.crust}} | Topping:
+                                    {{pizza.toppings}}<br>
+                                    {%endfor%}
+                                </li>
+                                {% endif %}
+                                {% endfor %}
+                                {% else %}
+                                <li class="list-group-item">No order yet. Please order something.</li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Most recent picked combos:</h4>
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                {% if previouspizzas %}
+                                {% for pizza in previouspizzas reversed %}
+                                {% if forloop.counter < 4 %}
+                                <li class="list-group-item">- Size: {{pizza.size}} <br>- Crust: {{pizza.crust}} <br>-
+                                    Topping: {{pizza.toppings}} <br>- Price: ${{pizza.price}}
+                                    <form method="post" action="reorder">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="size" value="{{pizza.size}}">
+                                        <input type="hidden" name="crust" value="{{pizza.crust}}">
+                                        <input type="hidden" name="toppings" value="{{pizza.toppings}}">
+                                        <input type="hidden" name="price" value="{{pizza.price}}">
+                                        <button type="submit" class="offset-4 btn btn-primary">Add to order</button>
+                                    </form>
+                                </li>
+
+                                {% endif %}
+                                {% endfor %}
+                                {% else %}
+                                <li class="list-group-item">No order yet. Please order something.</li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

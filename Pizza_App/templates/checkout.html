@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    {% comment %} Bootstrap CDN and JS {% endcomment %}
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"
+        integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
+    </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"
+        integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/" crossorigin="anonymous">
+    </script>
+    {% comment %} Boostrap icon CDN {% endcomment %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/checkoutstyle.css' %}">
+
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-fixed-top bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/order">Mac's Pizza</a>
+            <div class="d-flex btn-group" role="group">
+                <button type="button" class="btn btn-default btn-light" onclick="location.href='/order'"><i
+                        class="bi bi-house-fill"></i>Home</button>
+                <button type="button" class="btn btn-default btn-primary" onclick="location.href='/checkout'"><i
+                        class="bi bi-cart"></i>Order ({{order.quantity}})</button>
+                <button type="button" class="btn btn-default btn-light" onclick="location.href='/account'"><i
+                        class="bi bi-person-circle"></i>Account</button>
+                <button type="button" class="btn btn-default btn-light" onclick="location.href='/logout'"><i
+                        class="bi bi-box-arrow-right"></i>Logout</button>
+            </div>
+        </div>
+    </nav>
+    <div class='container'>
+        <h1>{{user.fname}}, here's your order:</h1>
+        <div class="card" style="margin: 2em 0">
+            <div class="card-header">
+                <h3>Order summary: </h3>
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for pizza in pizzas %}
+                <li class="list-group-item">
+                    - Size: {{ pizza.size }}<br>
+                    - Crust: {{ pizza.crust}}<br>
+                    - Toppings: {{pizza.toppings}}<br>
+                    <div style="float: right">${{ pizza.price }}</div>
+                </li>
+                {% endfor %}
+            </ul>
+            <div style="font-weight: bold" class="card-footer">
+                Qty: {{order.quantity}}
+                <div style="float: right">Total: ${{order.orderPrice}}</div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="offset-1 col">
+                    <a class="btn btn-success" href="/order" role="button">Add more pizzas</a>
+            </div>
+            <div class="offset-2 col">
+                <form method="post" action="cancel">
+                    {% csrf_token%}
+                    <input type="hidden" name="orderID" value="{{order.id}}">
+                    <button type="submit" class="btn btn-danger">Cancel</button>
+                </form>
+            </div>
+            <div class="offset-1 col">
+                <form method="post" action="/submitorder">
+                    {% csrf_token %}
+                    <input type="hidden" name="orderID" value={{order.id}}>
+                    <button type="submit" class="btn btn-primary">Order!</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
