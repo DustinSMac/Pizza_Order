@@ -74,7 +74,9 @@ class User(models.Model):
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
     objects=UserManager()
-    
+    #user_posts
+    #liked_posts
+    #comments
     def __repr__(self):
         return f"{self.id} {self.fname} {self.lname}. Email: {self.email} Address: {self.address}, {self.city} {self.state}, {self.zipcode}"
     
@@ -113,3 +115,13 @@ class Pizza(models.Model):
     order=models.ForeignKey(Order, related_name="tempPizza",on_delete=models.CASCADE,null=True)
     #same, this class only got created when actual purchase happen.
 
+class Post(models.Model):
+    content = models.TextField(null=True, blank=True)
+    image=models.FileField(null=True, blank=True, upload_to="images")
+    likes=models.ManyToManyField(User,related_name="liked_posts")
+    poster=models.ForeignKey(User,related_name="user_posts",on_delete=models.CASCADE)
+
+class Comment(models.Model):
+    comment = models.CharField(max_length=255)
+    poster=models.ForeignKey(User,related_name="comments",on_delete=models.CASCADE)
+    post=models.ForeignKey(Post,related_name="post_comments",on_delete=models.CASCADE)

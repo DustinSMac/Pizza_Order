@@ -16,4 +16,9 @@ urlpatterns = [
     path('reorder',reorder),
     path('cancel',cancel),
     path('submitorder',submitorder),
+    path('post',post),
+    path('comment/<int:id>',comment),
+    path('like/<int:id>',like),
+    path('partialpost/<int:id>',partialpost),
+    path('thewall',thewall),
 ]

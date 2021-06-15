@@ -2,10 +2,10 @@
     background-color: rgba(235, 237, 238, 0.918);
     position: relative;
     height: auto;
-    width: 80vw;
+    width: 35vw;
     border-radius: 5px;
     padding: 1em;
-    margin-top: 4em;
+    margin-top: 2.5em;
 }
 body{
     background-image: url('../image/pizza.jpg');
@@ -13,5 +13,4 @@ body{
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-position: center;
-    
 }

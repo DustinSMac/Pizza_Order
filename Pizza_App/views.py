@@ -203,3 +203,47 @@ def submitorder(request):
     }
     request.session['orderID']=newOrder.id    
     return render(request,"thankyou.html",context)
+
+
+#developing the wall for posting and sharing picture of pizza or interact between pizza buyer.
+def thewall(request):
+    if 'userID' not in request.session:
+        return redirect('/')    
+    context={
+        'order':tempOrder.objects.get(id=request.session['orderID']),
+        
+    }
+    return render(request,"wall.html",context)
+
+
+def post(request):
+    content=request.POST('content')
+    image=request.FILES('image')
+    poster=User.objects.get(id=request.session['userID'])
+    newPost=Post.objects.create(
+        content=content,
+        image=image,
+        poster=poster,
+    )
+    return redirect(f"/partial/{newPost.id}")
+
+
+def comment(request,id):
+    newPost=Post.objects.get(id=id)
+    poster=User.objects.get(id=request.session['userID'])
+    comment=request.POST('comment')
+    Comment.objects.create(
+        comment=comment,
+        poster=poster,
+        post=newPost,        
+    )
+    return redirect('/wall')
+
+def like(request,id):
+    newPost=Post.objects.get(id=id)
+    user=User.objects.get(id=request.session['userID'])
+    newPost.likes.add(user)
+
+
+def partialpost(request):
+    pass
