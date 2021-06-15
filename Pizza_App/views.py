@@ -57,17 +57,17 @@ def login(request):
     return redirect('/order')
 
 def order(request):
-    # Order Page
+    # tempOrder Page
     if 'userID' not in request.session:
         return redirect('/')
     user=User.objects.get(id=request.session['userID']) #get the current user in order for model to work, pulling by id.
     if 'orderID' not in request.session: #have to create new order, since the foreign key in pizza require order to be made first
-        newOrder=Order.objects.create( #similarly, user has to be presented for order to be made.
+        newOrder=tempOrder.objects.create( #similarly, user has to be presented for order to be made.
             user=user
         )
         request.session['orderID']=newOrder.id #make new orderID session to be this new order's ID.
     context={
-        'order':Order.objects.get(id=request.session['orderID']), #this is to show order quantity on navbar.
+        'order':tempOrder.objects.get(id=request.session['orderID']), #this is to show order quantity on navbar.
         'user': user,
         'sizes': size,
         'crusts': crust,
@@ -89,8 +89,8 @@ def purchase(request): # this is execute when click on "Add to order"
     for topping in toppingChecked:
         toppingPrice+=price['topping'][f"{topping}"]
     totalPrice=sizePrice+toppingPrice
-    order=Order.objects.get(id=request.session['orderID'])
-    pizza=Pizza.objects.create(
+    order=tempOrder.objects.get(id=request.session['orderID'])
+    pizza=tempPizza.objects.create(
         size=request.POST['size'],
         crust=request.POST['crust'],
         toppings=toppinglist,
@@ -112,9 +112,9 @@ def account(request):
         return redirect('/')
     user=User.objects.get(id=request.session['userID'])
     context={
-        'pizzas': Purchased_Pizza.objects.all(),
-        'orders': Purchased_Order.objects.all(),
-        'order':Order.objects.get(id=request.session['orderID']),
+        'pizzas': Pizza.objects.all(),
+        'orders': Order.objects.all(),
+        'order':tempOrder.objects.get(id=request.session['orderID']),
         'user': user,
         'states':states,
     }
@@ -144,18 +144,18 @@ def checkout(request):
     if 'userID' not in request.session:
         return redirect('/')
     context={
-        'order':Order.objects.get(id=request.session['orderID']),
+        'order':tempOrder.objects.get(id=request.session['orderID']),
         'user': User.objects.get(id=request.session['userID']),
-        'pizzas': Order.objects.get(id=request.session['orderID']).Pizza.all(),
-        'orders': Order.objects.all()
+        'pizzas': tempOrder.objects.get(id=request.session['orderID']).tempPizza.all(),
+        'orders': tempOrder.objects.all()
     }
     return render(request, 'checkout.html',context)
 
 
 def reorder(request):
     #adding previous pizzas into current order and redirect to order page.
-    order=Order.objects.get(id=request.session['orderID'])
-    reorderPizza=Pizza.objects.create(
+    order=tempOrder.objects.get(id=request.session['orderID'])
+    reorderPizza=tempPizza.objects.create(
         size=request.POST.get('size'),
         crust=request.POST.get('crust'),
         toppings=request.POST['toppings'],
@@ -170,36 +170,36 @@ def reorder(request):
 def cancel(request):
     #cancel current order, go back to order page
     order_ID_To_Cancel=request.POST['orderID']
-    order_To_Cancel=Order.objects.get(id=order_ID_To_Cancel)
+    order_To_Cancel=tempOrder.objects.get(id=order_ID_To_Cancel)
     order_To_Cancel.delete()
     del request.session['orderID']
     return redirect('/order')
 
 def submitorder(request):
-    #Purchase action. Save all orders and pizzas to more permanent class (Purchased_Order and Purchased_Pizza), then proceed to delete the object from Order and Pizza.
+    #Purchase action. Save all orders and pizzas to more permanent class (Order and Pizza), then proceed to delete the object from tempOrder and tempPizza.
     PurchaseOrder_ID=request.POST['orderID']
-    PurchaseOrder=Order.objects.get(id=PurchaseOrder_ID)
-    SaveOrder=Purchased_Order.objects.create(
+    PurchaseOrder=tempOrder.objects.get(id=PurchaseOrder_ID)
+    SaveOrder=Order.objects.create(
         user=User.objects.get(id=request.session['userID']),
         orderPrice=PurchaseOrder.orderPrice,
         quantity=PurchaseOrder.quantity,
     )
-    Pizza_list_to_save=Pizza.objects.filter(order=PurchaseOrder)
+    Pizza_list_to_save=tempPizza.objects.filter(order=PurchaseOrder)
     for pizza in Pizza_list_to_save:
-        Purchased_Pizza.objects.create(
+        Pizza.objects.create(
             size=pizza.size,
             crust=pizza.crust,
             toppings=pizza.toppings,
             price=pizza.price,
             order=SaveOrder,
         )
-    Pizza.objects.all().delete()        
-    Order.objects.all().delete()
-    newOrder=Order.objects.create( #similarly, user has to be presented for order to be made.
+    tempPizza.objects.all().delete()        
+    tempOrder.objects.all().delete()
+    newOrder=tempOrder.objects.create( #similarly, user has to be presented for order to be made.
         user=User.objects.get(id=request.session['userID'])
     )
     context={
-        'order': Purchased_Order.objects.last()
+        'order': Order.objects.last()
     }
     request.session['orderID']=newOrder.id    
     return render(request,"thankyou.html",context)

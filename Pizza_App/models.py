@@ -78,39 +78,38 @@ class User(models.Model):
     def __repr__(self):
         return f"{self.id} {self.fname} {self.lname}. Email: {self.email} Address: {self.address}, {self.city} {self.state}, {self.zipcode}"
     
+class tempOrder(models.Model):
+    quantity=models.IntegerField(default=0)
+    orderPrice=models.DecimalField(decimal_places=2,max_digits=5,default=0)
+    created_at=models.DateTimeField(auto_now_add=True)
+    updated_at=models.DateTimeField(auto_now=True)
+    user=models.ForeignKey(User,related_name="tempOrders",on_delete=models.CASCADE,null=True)
+    # Order can have many pizzas, user can have many orders.
+
 class Order(models.Model):
     quantity=models.IntegerField(default=0)
     orderPrice=models.DecimalField(decimal_places=2,max_digits=5,default=0)
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
-    user=models.ForeignKey(User,related_name="Order",on_delete=models.CASCADE,null=True)
-    # Order can have many pizzas, user can have many orders.
-
-class Purchased_Order(models.Model):
-    quantity=models.IntegerField(default=0)
-    orderPrice=models.DecimalField(decimal_places=2,max_digits=5,default=0)
-    created_at=models.DateTimeField(auto_now_add=True)
-    updated_at=models.DateTimeField(auto_now=True)
-    user=models.ForeignKey(User,related_name="Purchase_Order",on_delete=models.CASCADE)
+    user=models.ForeignKey(User,related_name="orders",on_delete=models.CASCADE)
     # this order only got created when actual purchase happened.
 
-class Pizza(models.Model):
+class tempPizza(models.Model):
     size=models.CharField(max_length=10)
     crust=models.CharField(max_length=20)
     toppings=models.CharField(max_length=255) #in order to show previous order, should be a long string with all topping in there 
     price=models.DecimalField(decimal_places=2,max_digits=5)
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
-    order=models.ForeignKey(Order, related_name="Pizza",on_delete=models.CASCADE,null=True)
+    order=models.ForeignKey(tempOrder, related_name="tempPizza",on_delete=models.CASCADE,null=True)
     
-class Purchased_Pizza(models.Model):
+class Pizza(models.Model):
     size=models.CharField(max_length=10)
     crust=models.CharField(max_length=20)
     toppings=models.CharField(max_length=255)
     price=models.DecimalField(decimal_places=2,max_digits=5)
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
-    order=models.ForeignKey(Purchased_Order, related_name="Pizza",on_delete=models.CASCADE,null=True)
+    order=models.ForeignKey(Order, related_name="tempPizza",on_delete=models.CASCADE,null=True)
     #same, this class only got created when actual purchase happen.
-
 
